@@ -1,9 +1,11 @@
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
+  cidrs_block                 = var.default_vpc_cidr
 
   route = [
     {
-      cidr_block                 = var.default_vpc_cidr
+     # cidr_block                 = var.default_vpc_cidr
+      cidr_block                 = "cidrs_block"
       egress_only_gateway_id     = ""
       network_interface_id       =""
       core_network_arn           = ""
@@ -45,10 +47,11 @@ resource "aws_route_table" "public" {
 
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.main.id
-
+  cidrs_block                 = var.default_vpc_cidr
   route = [
     {
-      cidr_block                 = var.default_vpc_cidr
+      #cidr_block                 = var.default_vpc_cidr
+      cidr_block                 = "cidrs_block"
       egress_only_gateway_id     = ""
       network_interface_id       =""
       core_network_arn           = ""
