@@ -1,0 +1,20 @@
+pipeline {
+  agent any
+
+  stages {
+
+    stage('Terraform Apply') {
+      steps {
+        sh 'cd databases ; make dev'
+      }
+    }
+
+  }
+
+  post {
+    always {
+      cleanWs()
+    }
+  }
+
+}

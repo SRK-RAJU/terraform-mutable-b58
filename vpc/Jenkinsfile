@@ -1,0 +1,20 @@
+pipeline {
+  agent any
+
+  stages {
+
+    stage('Terraform Apply') {
+      steps {
+        sh 'cd vpc ; make dev'
+      }
+    }
+
+  }
+
+  post {
+    always {
+      cleanWs()
+    }
+  }
+
+}

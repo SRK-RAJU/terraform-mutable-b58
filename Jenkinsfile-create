@@ -1,0 +1,129 @@
+pipeline {
+  agent any
+
+  parameters {
+    string(name: 'ENV', defaultValue: '', description: 'Env')
+  }
+  stages {
+    
+    stage('VPC') {
+      steps {
+        sh '''
+        cd vpc 
+        make ${ENV}
+        '''
+      }
+    }
+
+    stage('DB') {
+      parallel {
+        stage('DB') {
+          steps {
+            sh '''
+            cd databases; make ${ENV}
+            '''
+          }
+        }
+        stage('ALB') {
+          steps {
+            sh '''
+            cd alb; make ${ENV}
+            '''
+          }
+        }
+      }
+    }
+
+    stage('APP') {
+      parallel {
+
+        stage('cart') {
+          steps {
+            dir('cart') {
+              sh '''
+                git clone https://DevOps-Batches@dev.azure.com/DevOps-Batches/DevOps58/_git/cart .
+                ls -ltr
+                cd terraform-mutable
+                make ${ENV}
+              '''
+            }
+          }
+        }
+
+        stage('catalogue') {
+          steps {
+            dir('catalogue') {
+              sh '''
+                git clone https://DevOps-Batches@dev.azure.com/DevOps-Batches/DevOps58/_git/catalogue  .
+                ls -ltr
+                cd terraform-mutable
+                make ${ENV}
+              '''
+            }
+          }
+        }
+
+        stage('frontend') {
+          steps {
+            dir('frontend') {
+              sh '''
+                git clone https://DevOps-Batches@dev.azure.com/DevOps-Batches/DevOps58/_git/frontend .
+                ls -ltr
+                cd terraform-mutable
+                make ${ENV}
+              '''
+            }
+          }
+        }
+
+        stage('payment') {
+          steps {
+            dir('payment') {
+              sh '''
+                git clone https://DevOps-Batches@dev.azure.com/DevOps-Batches/DevOps58/_git/payment .
+                ls -ltr
+                cd terraform-mutable
+                make ${ENV}
+              '''
+            }
+          }
+        }
+
+        stage('shipping') {
+          steps {
+            dir('shipping') {
+              sh '''
+                git clone https://DevOps-Batches@dev.azure.com/DevOps-Batches/DevOps58/_git/shipping .
+                ls -ltr
+                cd terraform-mutable
+                make ${ENV}
+              '''
+            }
+          }
+        }
+
+        stage('user') {
+          steps {
+            dir('user') {
+              sh '''
+                git clone https://DevOps-Batches@dev.azure.com/DevOps-Batches/DevOps58/_git/user .
+                ls -ltr
+                cd terraform-mutable
+                make ${ENV}
+              '''
+            }
+          }
+        }
+
+      }
+    }
+
+  }
+
+  post {
+    always {
+      cleanWs()
+    }
+  }
+
+}

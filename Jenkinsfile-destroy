@@ -1,0 +1,132 @@
+pipeline {
+  agent any
+
+  parameters {
+    string(name: 'ENV', defaultValue: '', description: 'Env')
+  }
+  
+  
+  stages {
+
+    stage('APP') {
+      parallel {
+
+        stage('cart') {
+          steps {
+            dir('cart') {
+              sh '''
+                git clone https://DevOps-Batches@dev.azure.com/DevOps-Batches/DevOps58/_git/cart .
+                ls -ltr
+                cd terraform-mutable
+                make ${ENV}-destroy
+              '''
+            }
+          }
+        }
+
+        stage('catalogue') {
+          steps {
+            dir('catalogue') {
+              sh '''
+                git clone https://DevOps-Batches@dev.azure.com/DevOps-Batches/DevOps58/_git/catalogue  .
+                ls -ltr
+                cd terraform-mutable
+                make ${ENV}-destroy
+              '''
+            }
+          }
+        }
+
+        stage('frontend') {
+          steps {
+            dir('frontend') {
+              sh '''
+                git clone https://DevOps-Batches@dev.azure.com/DevOps-Batches/DevOps58/_git/frontend .
+                ls -ltr
+                cd terraform-mutable
+                make ${ENV}-destroy
+              '''
+            }
+          }
+        }
+
+        stage('payment') {
+          steps {
+            dir('payment') {
+              sh '''
+                git clone https://DevOps-Batches@dev.azure.com/DevOps-Batches/DevOps58/_git/payment .
+                ls -ltr
+                cd terraform-mutable
+                make ${ENV}-destroy
+              '''
+            }
+          }
+        }
+
+        stage('shipping') {
+          steps {
+            dir('shipping') {
+              sh '''
+                git clone https://DevOps-Batches@dev.azure.com/DevOps-Batches/DevOps58/_git/shipping .
+                ls -ltr
+                cd terraform-mutable
+                make ${ENV}-destroy
+              '''
+            }
+          }
+        }
+
+        stage('user') {
+          steps {
+            dir('user') {
+              sh '''
+                git clone https://DevOps-Batches@dev.azure.com/DevOps-Batches/DevOps58/_git/user .
+                ls -ltr
+                cd terraform-mutable
+                make ${ENV}-destroy
+              '''
+            }
+          }
+        }
+
+      }
+    }
+
+    stage('DB') {
+      parallel {
+        stage('DB') {
+          steps {
+            sh '''
+            cd databases; make ${ENV}-destroy
+            '''
+          }
+        }
+        stage('ALB') {
+          steps {
+            sh '''
+            cd alb; make ${ENV}-destroy
+            '''
+          }
+        }
+      }
+    }
+
+    stage('VPC') {
+      steps {
+        sh '''
+        cd vpc 
+        terraform init -backend-config=env/dev-backend.tfvars -no-color
+        terraform destroy -target=aws_nat_gateway.ngw -var-file=env/dev.tfvars  -auto-approve
+        '''
+      }
+    }
+
+  }
+
+  post {
+    always {
+      cleanWs()
+    }
+  }
+
+}

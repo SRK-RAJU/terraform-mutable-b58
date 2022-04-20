@@ -1,0 +1,46 @@
+pipeline {
+  agent any
+
+  parameters {
+    string(name: 'COMPONENT', defaultValue: '', description: 'Which Application Component')
+    string(name: 'ENV', defaultValue: '', description: 'Which Environment')
+    string(name: 'APP_VERSION', defaultValue: '', description: 'Which Application Version')
+  }
+
+  stages {
+    stage ('Set text') {
+      steps {
+        script {
+          if("${ENV}" == "dev"){
+            COLORCODE="orange"
+          } else {
+            COLORCODE="green"
+          }
+          addShortText background: "${COLORCODE}", color: 'black', borderColor: 'yellow', text: "${COMPONENT}"
+          addShortText background: "${COLORCODE}", color: 'black', borderColor: 'yellow', text: "${APP_VERSION}"
+          addShortText background: "${COLORCODE}", color: 'black', borderColor: 'yellow', text: "${ENV}"
+        }
+      }
+    }
+    stage('Deployment') {
+      steps {
+        dir('app') {
+          sh '''
+            git clone https://DevOps-Batches@dev.azure.com/DevOps-Batches/DevOps58/_git/${COMPONENT} .
+            cd terraform-mutable 
+            export TF_VAR_APP_VERSION=${APP_VERSION}
+            terraform init -backend-config=env/prod-backend.tfvars -no-color
+            terraform apply -auto-approve -var-file=env/prod.tfvars -no-color
+          '''
+        }
+      }
+    }
+  }
+
+  post {
+    always {
+      cleanWs()
+    }
+  }
+
+}
