@@ -5,6 +5,7 @@ resource "aws_route_table" "public" {
     {
       cidr_block                 = var.default_vpc_cidr
       egress_only_gateway_id     = ""
+      network_interface_id       =""
       core_network_arn           = ""
       gateway_id                 = ""
       instance_id                = ""
@@ -21,6 +22,7 @@ resource "aws_route_table" "public" {
     {
       cidr_block                 = "0.0.0.0/0"
       core_network_arn           = ""
+      network_interface_id       =""
       egress_only_gateway_id     = ""
       gateway_id                 = aws_internet_gateway.gw.id
       instance_id                = ""
@@ -48,6 +50,7 @@ resource "aws_route_table" "private" {
     {
       cidr_block                 = var.default_vpc_cidr
       egress_only_gateway_id     = ""
+      network_interface_id       =""
       core_network_arn           = ""
       gateway_id                 = ""
       instance_id                = ""
@@ -64,6 +67,7 @@ resource "aws_route_table" "private" {
     {
       cidr_block                 = "0.0.0.0/0"
       egress_only_gateway_id     = ""
+      network_interface_id       =""
       core_network_arn           = ""
       gateway_id                 = ""
       instance_id                = ""
