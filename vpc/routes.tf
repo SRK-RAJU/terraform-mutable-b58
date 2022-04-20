@@ -4,8 +4,8 @@ resource "aws_route_table" "public" {
 
   route = [
     {
-     cidr_block                 = ["${var.default_vpc_cidr}"]
-      #cidr_block                 = cidr_block
+     #cidr_block                 = ["${var.default_vpc_cidr}"]
+      cidr_block                 = var.default_vpc_cidr
       egress_only_gateway_id     = ""
       network_interface_id       =""
       core_network_arn           = ""
@@ -52,7 +52,7 @@ resource "aws_route_table" "private" {
   route = [
     {
       cidr_block                 = ["${var.default_vpc_cidr}"]
-    #  cidr_block                 = cidr_block
+      cidr_block                 = var.default_vpc_cidr
       egress_only_gateway_id     = ""
       network_interface_id       =""
       core_network_arn           = ""

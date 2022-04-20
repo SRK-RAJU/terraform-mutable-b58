@@ -1,7 +1,8 @@
 resource "aws_subnet" "public" {
-  count             = length(var.public_subnet_cidr)
+  count             = length(var.public_subnet_cidr)[count.index]
   vpc_id            = aws_vpc.main.id
-  cidr_block        = element(var.public_subnet_cidr, count.index)
+ # cidr_block        = element(var.public_subnet_cidr, count.index)
+  cidr_block        = element(var.public_subnet_cidr)[count.index].rendered
   availability_zone = element(var.AZS, count.index)
 
   tags = {
@@ -12,9 +13,10 @@ resource "aws_subnet" "public" {
 
 resource "aws_subnet" "private" {
   depends_on        = [aws_route_table.private]
-  count             = length(var.private_subnet_cidr)
+  count             = length(var.private_subnet_cidr)[count.index]
   vpc_id            = aws_vpc.main.id
-  cidr_block        = element(var.private_subnet_cidr, count.index)
+ # cidr_block        = element(var.private_subnet_cidr, count.index)
+  cidr_block        = element(var.private_subnet_cidr)[count.index].rendered
   availability_zone = element(var.AZS, count.index)
 
   tags = {
